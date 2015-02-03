@@ -13,6 +13,9 @@ MIME_TABLE = {'.txt': 'text/plain',
 
 def get_static(path, env):
     path = path[1:len(path)]
+    repo_path = os.getenv('OPENSHIFT_REPO_DIR')
+    if repo_path:
+        path = os.path.normpath(repo_path+path)
     file_type = "application/octet-stream"
     if os.path.exists(path):
         f = open(path, 'rb')

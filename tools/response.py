@@ -14,8 +14,7 @@ class Response:
         if header:
             for key in header:
                 self.header[key] = header[key]
-            if 'Content-Type' not in self.header:
-                self.header['Content-Type'] = 'text/html'
+        self.header['Content-Type'] = ctype
         self.status = HTTP_STATUS[status]
 
     def get_header(self):
