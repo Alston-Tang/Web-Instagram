@@ -38,7 +38,7 @@ def application(environ, start_response):
 
     res = not_found()
     start_response(res.get_status(), res.get_header())
-    return res.get_body()
+    return os.getcwd()
 
 #
 # Below for testing only
