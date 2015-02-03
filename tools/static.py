@@ -20,7 +20,7 @@ def get_static(path, env):
         f.close()
         name, ext = os.path.splitext(path)
         if ext in MIME_TABLE:
-            file_ype = MIME_TABLE[ext]
+            file_type = MIME_TABLE[ext]
         return Response(content, ctype=file_type)
     else:
         return None
