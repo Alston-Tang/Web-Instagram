@@ -10,6 +10,7 @@ class RuleTree:
         self.handle = handle
 
 
+
 def __traverse__(node, name, depth):
     print(depth * '  ' + name)
     for sub_node_name in node.sub:
