@@ -1,6 +1,6 @@
 __author__ = 'Tang'
 
-HTTP_STATUS = {200: '200 OK'}
+HTTP_STATUS = {200: '200 OK', 404: '404 Not Found'}
 
 class Response:
     body = None

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import os
 import cgi
+from tools import not_found
 
 if __name__ != '__main__':
     virtenv = os.environ['OPENSHIFT_PYTHON_DIR'] + '/virtenv/'
@@ -34,6 +35,10 @@ def application(environ, start_response):
         if res:
             start_response(res.get_status(), res.get_header())
             return res.get_body()
+
+    res = not_found()
+    start_response(res.get_status(), res.get_header())
+    return res.get_body()
 
 #
 # Below for testing only
