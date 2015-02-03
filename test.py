@@ -1,11 +1,5 @@
 __author__ = 'Tang'
 
-from tools import Router
+import os
 
-t = Router()
-
-t.route("/test", None)
-t.route("/test/url", None)
-t.route("/ls", None)
-
-t.p_tree()
+print os.path.exists('/static/test.txt')

@@ -22,16 +22,18 @@ def application(environ, start_response):
 
     url = environ['PATH_INFO']
 
-    res = router.match(url)(environ)
+    handler = router.match(url)
+    if handler:
+        res = handler(environ)
+        start_response(res.get_status(), res.get_header())
+        return res.get_body()
 
-    ctype = res[0]
-    response_body = res[1]
-
-    status = '200 OK'
-    response_headers = [('Content-Type', ctype), ('Content-Length', str(len(response_body)))]
-    #
-    start_response(status, response_headers)
-    return [response_body]
+    handler = router.static(url)
+    if handler:
+        res = handler(url, environ)
+        if res:
+            start_response(res.get_status(), res.get_header())
+            return res.get_body()
 
 #
 # Below for testing only

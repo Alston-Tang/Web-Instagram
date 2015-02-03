@@ -1,5 +1,5 @@
 __author__ = 'Tang'
-
+from static import get_static
 
 class RuleTree:
     sub = None
@@ -40,6 +40,14 @@ class Router:
             if seg not in cur_pos.sub:
                 return None
         return cur_pos.handle
+
+    @staticmethod
+    def static(url):
+        url_list = filter(None, url.split('/'))
+        if url_list and url_list[0] == 'static':
+            return get_static
+
+        return None
 
     def p_tree(self):
         __traverse__(self.root, '/', 0)

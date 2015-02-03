@@ -1,6 +1,6 @@
 __author__ = 'Tang'
 
-from tools import router
+from tools import router, Response
 
 
 def index(env):
@@ -14,6 +14,6 @@ def index(env):
 </html>
 """
     ctype = 'text/html'
-    return [ctype, body]
+    return Response(body=body)
 
 router.route('/', index)
