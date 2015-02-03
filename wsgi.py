@@ -1,7 +1,6 @@
 #!/usr/bin/python
 import os
 import cgi
-import magic
 
 virtenv = os.environ['OPENSHIFT_PYTHON_DIR'] + '/virtenv/'
 virtualenv = os.path.join(virtenv, 'bin/activate_this.py')
