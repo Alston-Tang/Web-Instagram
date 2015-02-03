@@ -10,7 +10,6 @@ class RuleTree:
         self.handle = handle
 
 
-
 def __traverse__(node, name, depth):
     print(depth * '  ' + name)
     for sub_node_name in node.sub:
@@ -35,6 +34,8 @@ class Router:
     def match(self, url):
         cur_pos = self.root
         url_list = filter(None, url.split('/'))
+        if url_list[0] == 'static':
+            return None
         for seg in url_list:
             if seg not in cur_pos.sub:
                 return None

@@ -13,26 +13,18 @@ except IOError:
 # line, it's possible required libraries won't be in your searchable path
 #
 
+from tools import router
+import views
+
+
 def application(environ, start_response):
 
-    ctype = 'text/plain'
-    if environ['PATH_INFO'] == '/health':
-        response_body = "1"
-    elif environ['PATH_INFO'] == '/env':
-        response_body = ['%s: %s' % (key, value)
-                    for key, value in sorted(environ.items())]
-        response_body = '\n'.join(response_body)
-    else:
-        ctype = 'text/html'
-        response_body = '''<!doctype html>
-<html lang="en">
-<head>
-</head>
-<body>
-    Hello World!
-</body>
-</html>'''
+    url = environ['PATH_INFO']
 
+    handler = router.match(url)
+    response_body = handler(environ)
+
+    ctype = 'text/plain'
     status = '200 OK'
     response_headers = [('Content-Type', ctype), ('Content-Length', str(len(response_body)))]
     #
