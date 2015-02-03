@@ -34,7 +34,7 @@ class Router:
     def match(self, url):
         cur_pos = self.root
         url_list = filter(None, url.split('/'))
-        if url_list[0] == 'static':
+        if url_list and url_list[0] == 'static':
             return None
         for seg in url_list:
             if seg not in cur_pos.sub:

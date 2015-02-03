@@ -3,8 +3,8 @@ __author__ = 'Tang'
 from tools import router
 
 
-def index():
-    return """<!doctype html>
+def index(env):
+    body = """<!doctype html>
 <html lang="en">
 <head>
 </head>
@@ -13,5 +13,7 @@ def index():
 </body>
 </html>
 """
+    ctype = 'text/html'
+    return [ctype, body]
 
 router.route('/', index)
