@@ -1,7 +1,9 @@
 __author__ = 'Tang'
 
 import os
+import base64
 from response import Response
+from conf import STATIC_PATH, ACCEPT_IMG
 
 MIME_TABLE = {'.txt': 'text/plain',
               '.html': 'text/html',
@@ -12,10 +14,7 @@ MIME_TABLE = {'.txt': 'text/plain',
 
 
 def get_static(path, env):
-    path = path[1:len(path)]
-    repo_path = os.getenv('OPENSHIFT_REPO_DIR')
-    if repo_path:
-        path = os.path.normpath(repo_path+path)
+    path = os.path.normpath(STATIC_PATH+path[1:len(path)])
     file_type = "application/octet-stream"
     if os.path.exists(path):
         f = open(path, 'rb')
@@ -27,3 +26,10 @@ def get_static(path, env):
         return Response(content, ctype=file_type)
     else:
         return None
+
+
+def to_data_uri(data, img_type):
+    if type not in ACCEPT_IMG:
+        return None
+    else:
+        return 'date:' + img_type + ';base64,' + base64.b64encode(data)

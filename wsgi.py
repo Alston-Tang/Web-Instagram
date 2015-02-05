@@ -28,18 +28,18 @@ def application(environ, start_response):
         res = handler(environ)
         if res:
             start_response(res.get_status(), res.get_header())
-            return res.get_body()
+            return [res.get_body().encode('utf-8')]
 
     handler = router.static(url)
     if handler:
         res = handler(url, environ)
         if res:
             start_response(res.get_status(), res.get_header())
-            return res.get_body()
+            return [res.get_body().encode('utf-8')]
 
     res = not_found()
     start_response(res.get_status(), res.get_header())
-    return res.get_body()
+    return [res.get_body().encode('utf-8')]
 
 #
 # Below for testing only

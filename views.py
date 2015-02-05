@@ -1,21 +1,13 @@
 __author__ = 'Tang'
 
-from tools import router, Response
+from tools import router, Response, render
 import cgi
 import os
 
 
 def index(env):
-    body = """<!doctype html>
-<html lang="en">
-<head>
-</head>
-<body>
-    Hello World!
-</body>
-</html>
-"""
-    ctype = 'text/html'
+
+    body = render('test.html', content="Hello World!")
     return Response(body=body)
 
 
@@ -23,7 +15,7 @@ def upload(env):
     path = os.path.join('static', 'upload')
     repo_path = os.getenv('OPENSHIFT_REPO_DIR')
     if repo_path:
-        path = os.path.normpath(os.path.join(path, repo_path))
+        path = os.path.normpath(os.path.join(repo_path, path))
     if env['REQUEST_METHOD'] != 'POST':
         return None
 

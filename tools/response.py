@@ -7,7 +7,7 @@ class Response:
     header = None
     status = None
 
-    def __init__(self, body=None, header=None, status=200, ctype="text/html"):
+    def __init__(self, body=None, header=None, status=200, ctype="text/html", charset='utf-8'):
         self.body = body
         if not self.header:
             self.header = {}
@@ -16,6 +16,7 @@ class Response:
                 self.header[key] = header[key]
         self.header['Content-Type'] = ctype
         self.status = HTTP_STATUS[status]
+
 
     def get_header(self):
         rv = []
