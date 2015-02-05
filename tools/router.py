@@ -11,7 +11,7 @@ class RuleTree:
 
 
 def __traverse__(node, name, depth):
-    print(depth * '  ' + name)
+    print(depth * '  ' + name+':'+node.handle.func_name)
     for sub_node_name in node.sub:
         __traverse__(node.sub[sub_node_name], sub_node_name, depth+1)
 
@@ -39,6 +39,7 @@ class Router:
         for seg in url_list:
             if seg not in cur_pos.sub:
                 return None
+            cur_pos = cur_pos.sub[seg]
         return cur_pos.handle
 
     @staticmethod

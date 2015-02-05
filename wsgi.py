@@ -26,8 +26,9 @@ def application(environ, start_response):
     handler = router.match(url)
     if handler:
         res = handler(environ)
-        start_response(res.get_status(), res.get_header())
-        return res.get_body()
+        if res:
+            start_response(res.get_status(), res.get_header())
+            return res.get_body()
 
     handler = router.static(url)
     if handler:
@@ -47,4 +48,4 @@ if __name__ == '__main__':
     from wsgiref.simple_server import make_server
     httpd = make_server('localhost', 8051, application)
     # Wait for a single request, serve it and quit.
-    httpd.handle_request()
+    httpd.serve_forever()
