@@ -1,6 +1,7 @@
 __author__ = 'Tang'
 
-from tools import router, Response, render
+from tools import router, Response
+from template import render
 import cgi
 import os
 
