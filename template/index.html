@@ -3,8 +3,50 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>My Instagram</title>
+    <link rel="stylesheet" href="static/stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="static/stylesheets/app.css"
 </head>
 <body>
-    <img src="{{ img }}"/>
+<div class="row">
+    {% for i in range(1, 8) %}
+        <div class="col-lg-3">
+            <img class="img-responsive index-image" src="static/upload/test.jpg">
+        </div>
+    {% endfor %}
+</div>
+
+<div class="row page-control">
+    <div class="col-lg-2 text-center">
+        <button class="btn btn-primary">Previous Page</button>
+    </div>
+    <div class="col-lg-2 col-lg-offset-3 text-center page-number">
+        Page 1 of 10
+    </div>
+    <div class="col-lg-2 col-lg-offset-3 text-center">
+        <button class="btn btn-primary">Next Page</button>
+    </div>
+</div>
+
+<div class="row upload-control">
+    <div class="col-lg-4 text-center">
+        Upload Your Photo
+        <form action="/upload" method="post" enctype="multipart/form-data">
+        <div class="btn btn-success file-upload">
+        Choose File
+            <input type="file" class="upload" name="img" id="img">
+        </div>
+        <div class="btn btn-danger file-upload">
+        Upload
+            <input type="submit" class="upload">
+        </div>
+        </form>
+    </div>
+    <div class="col-lg-2 col-lg-offset-5">
+        Resume your work
+        <button class="btn btn-warning">
+            Resume
+        </button>
+    </div>
+</div>
 </body>
 </html>

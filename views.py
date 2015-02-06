@@ -1,6 +1,6 @@
 __author__ = 'Tang'
 
-from tools import router, Response, to_data_uri
+from tools import router, Response, to_data_uri, set_session, init_db
 from template import render
 import cgi
 import os
@@ -8,7 +8,7 @@ import os
 
 def index(env):
 
-    body = render('test.html', content="Hello World!")
+    body = render('index.html')
     return Response(body=body)
 
 
@@ -17,12 +17,21 @@ def upload(env):
         return None
 
     form = cgi.FieldStorage(fp=env['wsgi.input'], environ=env, keep_blank_values=True)
-    pic = form['fileToUpload']
+    pic = form['img']
+    session = set_session()
+
     #pic_uri = to_data_uri(pic, )
+
+
+def init(env):
+    init_db()
+    return index(env)
+
 
 
 
 
 router.route('/', index)
 router.route('/upload', upload)
+router.route('/init.html', init)
 router.p_tree()

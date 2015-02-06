@@ -35,7 +35,7 @@ def application(environ, start_response):
         res = handler(url, environ)
         if res:
             start_response(res.get_status(), res.get_header())
-            return [res.get_body().encode('utf-8')]
+            return [res.get_body()]
 
     res = not_found()
     start_response(res.get_status(), res.get_header())

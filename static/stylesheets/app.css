@@ -1,0 +1,49 @@
+.index-image{
+    margin: 0 auto;
+    max-width: 200px;
+    max-height: 200px;
+    border: 2px solid black;
+}
+
+.index-image:hover{
+    border-color: cornflowerblue;
+}
+
+.page-control{
+    margin-top: 20px;
+}
+.upload-control{
+    margin-top: 60px;
+}
+
+.upload-control>div{
+    color: #ffffff;
+    font-size: 1.5em;
+}
+
+.page-control>.page-number{
+    color: #ffffff;
+    font-size: 1.5em;
+}
+
+.file-upload {
+	position: relative;
+	overflow: hidden;
+	margin: 10px;
+}
+
+.file-upload input.upload {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0;
+	padding: 0;
+	font-size: 20px;
+	cursor: pointer;
+	opacity: 0;
+	filter: alpha(opacity=0);
+}
+
+body{
+    background-color: #000000;
+}

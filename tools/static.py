@@ -32,4 +32,4 @@ def to_data_uri(data, img_type):
     if type not in ACCEPT_IMG:
         return None
     else:
-        return 'date:' + img_type + ';base64,' + base64.b64encode(data)
+        return 'date:' + img_type + ';base64,' + data
