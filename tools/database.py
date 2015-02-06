@@ -1,5 +1,6 @@
 __author__ = 'tang'
 
+from conf import DB_HOST, DB_PASSWORD, DB_USERNAME, DB_PORT
 from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship, backref
@@ -7,7 +8,8 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from uuid import uuid1
 
-engine = create_engine("mysql://adminUbw65Jz:aMlEyugQkjaa@localhost/myinstagram", echo=True)
+engine = create_engine("mysql://%s:%s@%s:%s/myinstagram" % (DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT),
+                       echo=True)
 db = sessionmaker(engine)()
 
 Base = declarative_base()
