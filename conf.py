@@ -20,8 +20,8 @@ DB_PASSWORD = os.getenv('OPENSHIFT_MYSQL_DB_PASSWORD')
 if not DB_HOST or not DB_PORT or not DB_USERNAME or not DB_PASSWORD:
     DB_HOST = 'localhost'
     DB_PORT = '3306'
-    DB_USERNAME = 'adminUbw65Jz'
-    DB_PASSWORD = 'aMlEyugQkjaa'
+    DB_USERNAME = 'root'
+    DB_PASSWORD = 'a1a2a3a4'
 
 ACCEPT_IMG = ['image/jpeg', 'image/png',  'image/gif']
 

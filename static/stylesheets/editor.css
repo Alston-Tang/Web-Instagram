@@ -1,0 +1,20 @@
+body{
+    background-color: #000000;
+}
+
+.desc{
+    color: #ffffff;
+    font-size: 1.5em;
+}
+
+.editor-panel{
+    margin-top: 30px;
+}
+
+label{
+    color: #ffffff;
+}
+
+.hide{
+    visibility: hidden;
+}

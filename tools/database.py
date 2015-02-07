@@ -4,6 +4,7 @@ from conf import DB_HOST, DB_PASSWORD, DB_USERNAME, DB_PORT
 from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship, backref
+from sqlalchemy.dialects.mysql import LONGTEXT
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from uuid import uuid1
@@ -19,14 +20,14 @@ class Photo(Base):
     id = Column(Integer, primary_key=True)
     create_time = Column(DateTime)
     last_id = Column(Integer)
-    session = Column(String(32))
-    data = Column(Text)
+    session = Column(String(72))
+    data = Column(LONGTEXT)
 
 
 class Session(Base):
     __tablename__ = 'sessions'
 
-    id = Column(String(32), primary_key=True)
+    id = Column(String(72), primary_key=True)
     photo_id = Column(Integer, ForeignKey('photos.id'))
     expire_time = Column(DateTime)
     photo = relationship("Photo", uselist=False)
@@ -42,15 +43,27 @@ def set_session():
 
 def upload_photo(data, session_id):
     session = db.query(Session).get(session_id)
-    new_photo = Photo(None, datetime.now(), session.photo.id, session_id, data)
+    if session.photo:
+        new_photo = Photo(id=None, create_time=datetime.now(), last_id=session.photo.id, session=session_id, data=data)
+    else:
+        new_photo = Photo(id=None, create_time=datetime.now(), last_id=None, session=session_id, data=data)
     db.add(new_photo)
+    db.commit()
     session.photo_id = new_photo.id
     db.commit()
 
 
 def get_photos(session_id):
-    session = db.query(Session).get(session_id)
-    return session.photo
+    if session_id:
+        session = db.query(Session).get(session_id)
+        return session.photo
+    else:
+        count = 0
+        photos = db.query(Photo).filter(Photo.session == None).order_by(Photo.create_time.desc())
+        print photos
+        for photo in photos:
+            count += 1
+        return photos
 
 
 def pop_photo(session_id):
@@ -69,7 +82,7 @@ def commit_photo(session_id):
     cur_photo.session = None
     cur_photo.last_id = None
     db.commit()
-    db.query(Photo).filter(session == session_id).delete()
+    db.query(Photo).filter(Photo.session == session_id).delete()
     db.delete(session)
 
 
@@ -78,8 +91,11 @@ def get_page(page):
     if total <= page * 8:
         return None
     else:
-        photos = db.query(Photo.data).order(Photo.create_time.desc()).limit(8).offset(page * 8)
-        return photos
+        rv = []
+        photos = db.query(Photo.data).filter(Photo.session == None).order_by(Photo.create_time.desc()).limit(8).offset((page - 1) * 8)
+        for photo in photos:
+            rv.append(photo.data)
+        return rv
 
 
 def init_db():
