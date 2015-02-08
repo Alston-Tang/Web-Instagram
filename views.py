@@ -1,6 +1,6 @@
 __author__ = 'Tang'
 
-from tools import router, Response, set_session, init_db, get_uploaded_img, upload_photo, get_page, commit_photo
+from tools import router, Response, set_session, init_db, get_uploaded_img, upload_photo, commit_photo, get_page
 
 from template import render
 

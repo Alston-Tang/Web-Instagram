@@ -1,63 +1,70 @@
 __author__ = 'tang'
 
+import MySQLdb
 from conf import DB_HOST, DB_PASSWORD, DB_USERNAME, DB_PORT
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, func
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship, backref
-from sqlalchemy.dialects.mysql import LONGTEXT
-from sqlalchemy.pool import NullPool
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from uuid import uuid1
 
-engine = create_engine("mysql://%s:%s@%s:%s/myinstagram" % (DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT),
-                       echo=True, poolclass=NullPool)
+
+con = MySQLdb.connect(user=DB_USERNAME, passwd=DB_PASSWORD, host=DB_HOST, port=int(DB_PORT), db="myinstagram")
+cur = con.cursor()
+cur.connection.autocommit(True)
+
+def drop_all():
+    cur.execute("DROP TABLE IF EXISTS photos")
+    cur.execute("DROP TABLE IF EXISTS sessions")
 
 
-Base = declarative_base()
+def create_all():
+    photos = '''
+    CREATE TABLE photos
+    (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    create_time DATETIME,
+    last_id INT,
+    session VARCHAR(72),
+    data LONGTEXT
+    );'''
+    sessions = '''
+    CREATE TABLE sessions
+    (
+    id VARCHAR(72) PRIMARY KEY,
+    photo_id INTEGER,
+    expire_time DATETIME
+    );
+    '''
+    cur.execute(sessions)
+    cur.execute(photos)
 
 
-class Photo(Base):
-    __tablename__ = 'photos'
-
-    id = Column(Integer, primary_key=True)
-    create_time = Column(DateTime)
-    last_id = Column(Integer)
-    session = Column(String(72))
-    data = Column(LONGTEXT)
-
-
-class Session(Base):
-    __tablename__ = 'sessions'
-
-    id = Column(String(72), primary_key=True)
-    photo_id = Column(Integer, ForeignKey('photos.id'))
-    expire_time = Column(DateTime)
-    photo = relationship("Photo", uselist=False)
-
-db = sessionmaker(bind=engine)()
+def init_db():
+    drop_all()
+    create_all()
 
 
 def set_session():
     session_id = uuid1()
-    session = Session(id=session_id, expire_time=datetime.now() + relativedelta(months=+3))
-    db.add(session)
-    db.commit()
+
+    command = "INSERT INTO sessions (id, expire_time) VALUES ('%s', '%s');" % (session_id, (datetime.now() + relativedelta(months=+3)).strftime('%Y-%m-%d %H:%M:%S'))
+    print command
+    rv = cur.execute(command)
+
     return session_id
 
 
 def upload_photo(data, session_id):
-    session = db.query(Session).get(session_id)
-    if session.photo:
-        new_photo = Photo(id=None, create_time=datetime.now(), last_id=session.photo.id, session=session_id, data=data)
-    else:
-        new_photo = Photo(id=None, create_time=datetime.now(), last_id=None, session=session_id, data=data)
-    db.add(new_photo)
-    db.commit()
-    session.photo_id = new_photo.id
-    db.commit()
+    cur.execute("SELECT photo_id FROM sessions WHERE id='%s'" % session_id)
+    last_id = cur.fetchone()[0]
+    if last_id is None:
+        last_id = 'NULL'
+    command = "INSERT INTO photos (create_time, last_id, session, data) VALUES ('%s', %s, '%s', '%s')" % (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), last_id, session_id, data)
+    print command
+    cur.execute(command)
+    photo_id = cur.lastrowid
+    cur.execute("UPDATE sessions SET photo_id=%d WHERE id='%s'" % (photo_id, session_id))
 
-
+'''
 def get_photos(session_id):
     if session_id:
         session = db.query(Session).get(session_id)
@@ -68,7 +75,7 @@ def get_photos(session_id):
         print photos
         for photo in photos:
             count += 1
-        return photos
+        return photosdb=_mysql.connect()
 
 
 def pop_photo(session_id):
@@ -79,29 +86,25 @@ def pop_photo(session_id):
     db.delete(cur_photo)
     db.commit()
 
+'''
+
 
 def commit_photo(session_id):
-    session = db.query(Session).get(session_id)
-    cur_photo = session.photo
-    cur_photo.create_time = datetime.now()
-    cur_photo.session = None
-    cur_photo.last_id = None
-    db.commit()
-    db.query(Photo).filter(Photo.session == session_id).delete()
-    db.delete(session)
+    cur.execute("SELECT photo_id FROM sessions WHERE id='%s'" % session_id)
+    photo_id = cur.fetchone()[0]
+    cur.execute("UPDATE photos SET create_time='%s', session=NULL, last_id=NULL WHERE id=%d" % (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), photo_id))
+    cur.execute("DELETE FROM photos WHERE session='%s'" % session_id)
 
 
 def get_page(page):
-    num = db.query(func.count(Photo.id)).scalar()
+    cur.execute("SELECT COUNT(id) FROM photos")
+    num = cur.fetchone()[0]
+    start = (page - 1) * 8
+    if (page - 1) * 8 >= num:
+        return []
     rv = []
-    photos = db.query(Photo.data).filter(Photo.session == None).order_by(Photo.create_time.desc())
-    db.close()
+    cur.execute("SELECT data FROM photos WHERE session IS NULL ORDER BY create_time DESC LIMIT 8 OFFSET %d" % start)
+    photos = cur.fetchall()
     for photo in photos:
-        rv.append(photo.data)
+        rv.append(photo[0])
     return rv
-
-
-def init_db():
-    db.commit()
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
