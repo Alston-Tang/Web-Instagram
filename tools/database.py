@@ -14,6 +14,8 @@ engine = create_engine("mysql://%s:%s@%s:%s/myinstagram" % (DB_USERNAME, DB_PASS
 db = sessionmaker(engine)()
 
 Base = declarative_base()
+
+
 class Photo(Base):
     __tablename__ = 'photos'
 
@@ -87,11 +89,13 @@ def commit_photo(session_id):
 
 
 def get_page(page):
+    num = db.query(func.count(Photo.id)).scalar()
     rv = []
-    photos = db.query(Photo.data).filter(Photo.session == None).order_by(Photo.create_time.desc())
-    for photo in photos:
-        rv.append(photo.data)
-    return rv
+    #photos = db.query(Photo.data).filter(Photo.session == None).order_by(Photo.create_time.desc())
+    #for photo in photos:
+    #    rv.append(photo.data)
+    #return rv
+    return num
 
 
 def init_db():
