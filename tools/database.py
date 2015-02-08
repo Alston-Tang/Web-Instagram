@@ -87,15 +87,11 @@ def commit_photo(session_id):
 
 
 def get_page(page):
-    total = db.query(func.count(Photo.id))
-    if total <= page * 8:
-        return None
-    else:
-        rv = []
-        photos = db.query(Photo.data).filter(Photo.session == None).order_by(Photo.create_time.desc()).limit(8).offset((page - 1) * 8)
-        for photo in photos:
-            rv.append(photo.data)
-        return rv
+    rv = []
+    photos = db.query(Photo.data).filter(Photo.session == None).order_by(Photo.create_time.desc())
+    for photo in photos:
+        rv.append(photo.data)
+    return rv
 
 
 def init_db():
