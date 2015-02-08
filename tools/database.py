@@ -92,6 +92,7 @@ def get_page(page):
     num = db.query(func.count(Photo.id)).scalar()
     rv = []
     photos = db.query(Photo.data).filter(Photo.session == None).order_by(Photo.create_time.desc())
+    db.close()
     for photo in photos:
         rv.append(photo.data)
     return rv
