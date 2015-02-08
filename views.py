@@ -29,7 +29,7 @@ def upload(env):
 
 def init(env):
     init_db()
-    return index(env)
+    return Response(body='Success')
 
 
 def test(env):
