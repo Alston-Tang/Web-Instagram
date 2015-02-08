@@ -5,13 +5,14 @@ from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, F
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.dialects.mysql import LONGTEXT
+from sqlalchemy.pool import NullPool
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from uuid import uuid1
 
 engine = create_engine("mysql://%s:%s@%s:%s/myinstagram" % (DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT),
-                       echo=True)
-db = sessionmaker(engine)()
+                       echo=True, poolclass=NullPool)
+
 
 Base = declarative_base()
 
@@ -33,6 +34,8 @@ class Session(Base):
     photo_id = Column(Integer, ForeignKey('photos.id'))
     expire_time = Column(DateTime)
     photo = relationship("Photo", uselist=False)
+
+db = sessionmaker(bind=engine)()
 
 
 def set_session():
