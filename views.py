@@ -6,10 +6,9 @@ from template import render
 
 
 def index(env):
-    photos = []
-    num = get_page(1)
-    body = render('index.html')
-    return Response(body=str(num))
+    photos = get_page(1)
+    body = render('index.html', photos=photos)
+    return Response(body=body)
 
 
 def upload(env):

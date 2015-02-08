@@ -91,13 +91,13 @@ def commit_photo(session_id):
 def get_page(page):
     num = db.query(func.count(Photo.id)).scalar()
     rv = []
-    #photos = db.query(Photo.data).filter(Photo.session == None).order_by(Photo.create_time.desc())
-    #for photo in photos:
-    #    rv.append(photo.data)
-    #return rv
-    return num
+    photos = db.query(Photo.data).filter(Photo.session == None).order_by(Photo.create_time.desc())
+    for photo in photos:
+        rv.append(photo.data)
+    return rv
 
 
 def init_db():
+    db.commit()
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
