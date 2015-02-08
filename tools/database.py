@@ -34,8 +34,8 @@ def create_all():
     expire_time DATETIME
     );
     '''
-    cur.execute(sessions)
     cur.execute(photos)
+    cur.execute(sessions)
 
 
 def init_db():
