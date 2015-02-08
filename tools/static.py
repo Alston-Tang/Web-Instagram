@@ -12,7 +12,8 @@ MIME_TABLE = {'.txt': 'text/plain',
               '.css': 'text/css',
               '.js': 'application/javascript',
               '.jpg': 'image/jpeg',
-              '.jpeg': 'image/jpeg'}
+              '.jpeg': 'image/jpeg',
+              '.png': 'image/png'}
 
 
 def get_static(path, env):
