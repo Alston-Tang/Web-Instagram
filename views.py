@@ -1,6 +1,7 @@
 __author__ = 'Tang'
 
-from tools import router, Response, set_session, init_db, get_uploaded_img, upload_photo, commit_photo, get_page
+from tools import router, Response, set_session, init_db, get_uploaded_img, upload_photo, commit_photo, get_page, \
+    get_photo
 
 from template import render
 
@@ -18,13 +19,8 @@ def upload(env):
     session_id = set_session()
     upload_photo(img_uri, session_id)
     commit_photo(session_id)
-
-
-
-
-    pass
-
-    #pic_uri = to_data_uri(pic, )
+    photo = get_photo(session_id)
+    return Response(body=render('editor.html', photo=photo), cookie=('token', session_id))
 
 
 def init(env):

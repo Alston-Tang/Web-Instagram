@@ -64,20 +64,15 @@ def upload_photo(data, session_id):
     photo_id = cur.lastrowid
     cur.execute("UPDATE sessions SET photo_id=%d WHERE id='%s'" % (photo_id, session_id))
 
+
+def get_photo(session_id):
+    cur.execute("SELECT photo_id FROM sessions WHERE id='%s'" % session_id)
+    photo_id = cur.fetchone()[0]
+    cur.execute("SELECT data FROM photos WHERE id=%d" % photo_id)
+    photo = cur.fetchone()[0]
+    return photo
+
 '''
-def get_photos(session_id):
-    if session_id:
-        session = db.query(Session).get(session_id)
-        return session.photo
-    else:
-        count = 0
-        photos = db.query(Photo).filter(Photo.session == None).order_by(Photo.create_time.desc())
-        print photos
-        for photo in photos:
-            count += 1
-        return photosdb=_mysql.connect()
-
-
 def pop_photo(session_id):
     session = db.query(Session).get(session_id)
     cur_photo = session.photo
