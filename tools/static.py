@@ -5,7 +5,10 @@ import base64
 import cgi
 import magic
 from response import Response
-from conf import REPO_PATH, ACCEPT_IMG
+from conf import REPO_PATH, ACCEPT_IMG, TEMP_PATH, STATIC_PATH
+import tempfile
+import subprocess
+from PIL import Image
 
 MIME_TABLE = {'.txt': 'text/plain',
               '.html': 'text/html',
@@ -14,6 +17,8 @@ MIME_TABLE = {'.txt': 'text/plain',
               '.jpg': 'image/jpeg',
               '.jpeg': 'image/jpeg',
               '.png': 'image/png'}
+
+IMG_PATH = os.path.join(STATIC_PATH, 'pic')
 
 
 def get_static(path, env):
@@ -58,8 +63,75 @@ def decode_data_uri(data):
     start = end = 5
     while data[end] != ';':
         end += 1
-    img_type = data[start:end-start]
+    img_type = data[start:end]
     while data[end] != ',':
         end += 1
-    img = base64.b64decode(img_type[end+1:])
+    img = base64.b64decode(data[end+1:])
     return img, img_type
+
+
+def img_filter(filter_type, data):
+    tmp_file = tempfile.NamedTemporaryFile(delete=False, dir=TEMP_PATH, suffix='.jpg')
+    tmp_name = tmp_file.name
+    tmp_file.write(data)
+    tmp_file.close()
+
+    if filter_type == 'border':
+        subprocess.call(['convert', tmp_name, '-bordercolor', 'black', '-border', '20', tmp_name])
+    elif filter_type == 'lomo':
+        subprocess.call(['convert', tmp_name, '-channel', 'R', '-level', '33%', '-channel', 'G', '-level', '33%', tmp_name])
+    elif filter_type == 'lens-flare':
+        tmp_img = Image.open(tmp_name)
+        width = tmp_img.size[0]
+        height = tmp_img.size[1]
+        tmp_img.close()
+        require_file = get_flare(width, height)
+        subprocess.call(['composite', '-compose',  'screen', '-gravity', 'northwest', require_file, tmp_name, tmp_name])
+    elif filter_type == 'black-white':
+        tmp_img = Image.open(tmp_name)
+        width = tmp_img.size[0]
+        height = tmp_img.size[1]
+        tmp_img.close()
+        require_file = get_bwgrad(width, height)
+        subprocess.call(['convert', tmp_name, '-type', 'grayscale', tmp_name])
+        subprocess.call(['composite', '-compose', 'softlight', '-gravity', 'center', require_file, tmp_name, tmp_name])
+    elif filter_type == 'blur':
+        subprocess.call(['convert', tmp_name, '-blur', '0.5x2', tmp_name])
+
+    tmp_file = open(tmp_name, 'rb')
+    data = tmp_file.read()
+    return data, MIME_TABLE['.jpg']
+
+
+def img_annotate(font_type, font_size, position, content, data, img_type):
+    tmp_file = tempfile.NamedTemporaryFile(delete=False, dir=TEMP_PATH, suffix='.jpg')
+    tmp_name = tmp_file.name
+    tmp_file.write(data)
+    tmp_file.close()
+    if position == 'top':
+        subprocess.call(['convert', tmp_name, '-background', 'black', '-fill', '#ffffff', '-pointsize', font_size,
+                        '-font', font_type, 'label:'+content, '+swap', '-gravity', 'center', '-append', tmp_name])
+    elif position == 'bottom':
+        subprocess.call(['convert', tmp_name, '-background', 'black', '-fill', '#ffffff', '-pointsize', font_size,
+                        '-font', font_type, 'label:'+content, '-gravity', 'center', '-append', tmp_name])
+
+    tmp_file = open(tmp_name, 'rb')
+    data = tmp_file.read()
+    return data, MIME_TABLE['.jpg']
+
+
+def get_flare(width, height):
+    require_file = os.path.join(IMG_PATH, "lensflare_%s_%s.png" % (str(width), str(height)))
+    if not os.path.exists(require_file):
+        flare = Image.open(os.path.join(IMG_PATH, 'lensflare.png'))
+        flare = flare.resize((width, height))
+        flare.save(require_file)
+    return require_file
+
+def get_bwgrad(width, height):
+    require_file = os.path.join(IMG_PATH, "bwgrad_%s_%s.png" % (str(width), str(height)))
+    if not os.path.exists(require_file):
+        grad = Image.open(os.path.join(IMG_PATH, 'bwgrad.png'))
+        grad = grad.resize((width, height))
+        grad.save(require_file)
+    return require_file

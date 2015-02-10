@@ -47,7 +47,6 @@ def set_session():
     session_id = uuid1()
 
     command = "INSERT INTO sessions (id, expire_time) VALUES ('%s', '%s');" % (session_id, (datetime.now() + relativedelta(months=+3)).strftime('%Y-%m-%d %H:%M:%S'))
-    print command
     rv = cur.execute(command)
 
     return session_id
@@ -59,7 +58,6 @@ def upload_photo(data, session_id):
     if last_id is None:
         last_id = 'NULL'
     command = "INSERT INTO photos (create_time, last_id, session, data) VALUES ('%s', %s, '%s', '%s')" % (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), last_id, session_id, data)
-    print command
     cur.execute(command)
     photo_id = cur.lastrowid
     cur.execute("UPDATE sessions SET photo_id=%d WHERE id='%s'" % (photo_id, session_id))
@@ -72,16 +70,19 @@ def get_photo(session_id):
     photo = cur.fetchone()[0]
     return photo
 
-'''
-def pop_photo(session_id):
-    session = db.query(Session).get(session_id)
-    cur_photo = session.photo
-    last_photo = db.query(Session).get(cur_photo.last_id)
-    session.photo_id = last_photo.id
-    db.delete(cur_photo)
-    db.commit()
 
-'''
+def pop_photo(session_id):
+    cur.execute("SELECT photo_id FROM sessions WHERE id='%s'" % session_id)
+    photo_id = cur.fetchone()[0]
+    cur.execute("SELECT last_id FROM photos WHERE id=%d" % photo_id)
+    last_id = cur.fetchone()[0]
+    if last_id is None:
+        return False
+    cur.execute("DELETE FROM photos WHERE id=%d" % photo_id)
+    cur.execute("UPDATE sessions SET photo_id=%d WHERE id='%s'" % (last_id, session_id))
+    return True
+
+
 
 
 def commit_photo(session_id):

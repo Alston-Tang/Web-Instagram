@@ -10,10 +10,10 @@
                     Filter
                 </div>
             </div>
-            <form>
+            <form action="/filter" method="POST" id="filter">
                 <div class="row">
                     <div class="col-lg-7 col-lg-offset-1">
-                        <select id="effect-type" class="form-control">
+                        <select id="effect-type" class="form-control" form="filter" name="filter">
                             <option value="border">Border</option>
                             <option value="lomo">Lomo</option>
                             <option value="lens-flare">Lens Flare</option>
@@ -31,32 +31,32 @@
                     Annotation
                 </div>
             </div>
-            <form>
+            <form action="/annotate" method="POST" id="annotate" role="form">
                 <div class="row">
                     <div class="col-lg-10 col-lg-offset-1">
-                        <textarea class="form-control"></textarea>
+                        <textarea class="form-control" name="content"></textarea>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-6 col-lg-offset-1">
                         <label>Position</label>
-                        <select id="annotation-position" class="form-control">
+                        <select id="annotation-position" class="form-control" name="position" form="annotate">
                             <option value="top">Top</option>
                             <option value="bottom">Bottom</option>
                         </select>
                     </div>
                     <div class="col-lg-4">
-                        <label>Font Size</label>
-                        <input class="form-control" type="number" min="10" max="48">
+                        <label>Size</label>
+                        <input class="form-control" type="number" min="10" max="48" name="size">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-6 col-lg-offset-1">
                         <label>Font Type</label>
-                        <select id="annotation-font" class="form-control">
-                            <option value="times">Times</option>
-                            <option value="courier">Courier</option>
-                            <option value="helvetica">Helvetica</option>
+                        <select id="annotation-font" class="form-control" form="annotate" name="type">
+                            <option value="Times-Bold">Times</option>
+                            <option value="Courier">Courier</option>
+                            <option value="Helvetica">Helvetica</option>
                         </select>
                     </div>
                 </div>
@@ -64,6 +64,20 @@
                 <div class="row">
                     <div class="col-lg-10 col-lg-offset-1">
                         <button type="submit" class="btn btn-primary btn-block">Add</button>
+                    </div>
+                </div>
+            </form>
+            <form>
+                <div class="row submit-btn">
+                    <div class="col-lg-10 col-lg-offset-1">
+                        <button type="submit" class="btn btn-success btn-block">Submit</button>
+                    </div>
+                </div>
+            </form>
+            <form>
+                <div class="row discard-btn">
+                    <div class="col-lg-10 col-lg-offset-1">
+                        <button type="submit" class="btn btn-danger btn-block">Discard</button>
                     </div>
                 </div>
             </form>

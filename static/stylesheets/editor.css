@@ -18,3 +18,11 @@ label{
 .hide{
     visibility: hidden;
 }
+
+.submit-btn{
+    margin-top: 100px;
+}
+
+.discard-btn{
+    margin-top: 20px;
+}

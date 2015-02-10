@@ -11,6 +11,29 @@ if not REPO_PATH:
 STATIC_PATH = os.path.join(REPO_PATH, 'static')
 UPLOAD_PATH = os.path.join(STATIC_PATH, 'upload')
 TEMPLATE_PATH = os.path.join(REPO_PATH, 'template')
+TEMP_PATH = os.path.join(REPO_PATH, 'temp')
+
+try:
+    os.makedirs(STATIC_PATH)
+except OSError:
+    if not os.path.isdir(STATIC_PATH):
+        raise
+try:
+    os.makedirs(UPLOAD_PATH)
+except OSError:
+    if not os.path.isdir(STATIC_PATH):
+        raise
+try:
+    os.makedirs(TEMPLATE_PATH)
+except OSError:
+    if not os.path.isdir(STATIC_PATH):
+        raise
+
+try:
+    os.makedirs(TEMP_PATH)
+except OSError:
+    if not os.path.isdir(STATIC_PATH):
+        raise
 
 DB_HOST = os.getenv('OPENSHIFT_MYSQL_DB_HOST')
 DB_PORT = os.getenv('OPENSHIFT_MYSQL_DB_PORT')
