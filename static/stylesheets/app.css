@@ -44,6 +44,34 @@
 	filter: alpha(opacity=0);
 }
 
+.page-bar li>a{
+    color: gainsboro;
+    background-color: rgba(0,0,0,0);
+}
+
+.page-bar li>a:hover{
+    color: #000000;
+    background-color: #ffffff;
+}
+
+.page-bar .active>a{
+    color: #000000;
+    background-color: #ffffff;
+    border-color: #ffffff;
+}
+
+
+.page-bar .active>a:hover{
+    color: #000000;
+    background-color: gainsboro;
+    border-color: gainsboro;
+}
+
+.page-bar .active>a:visited{
+    color: #000000;
+    background-color: #ffffff;
+    border-color: #ffffff;
+}
 
 body{
     background-color: #000000;

@@ -3,25 +3,41 @@
     <link rel="stylesheet" href="static/stylesheets/app.css">
 {% endblock %}
 {% block content %}
-    <div class="row">
-        {% for photo in photos %}
-            <div class="col-lg-3">
-                <a href="{{ photo }}">
-                    <img class="img-responsive index-image" src="{{ photo }}">
-                </a>
-            </div>
-        {% endfor %}
+    {% set count = 0 %}
+    {% for photo in photos %}
+        {% if count % 4 == 0 %}
+            <div class="row">
+        {% endif %}
+    {% set count = count + 1 %}
+    <div class="col-lg-3">
+        <a href="{{ photo }}">
+            <img class="img-responsive index-image" src="{{ photo }}">
+        </a>
     </div>
+    {% if count % 4 == 0 or count == photos|length %}
+        </div>
+    {% endif %}
+    {% endfor %}
 
     <div class="row page-control">
-        <div class="col-lg-2 text-center">
-            <a class="btn btn-primary {{ prev }}" href="/?page={{ page - 1 }}">Previous Page</a>
-        </div>
-        <div class="col-lg-2 col-lg-offset-3 text-center page-number">
-            {{ page }} of {{ total_page }}
-        </div>
-        <div class="col-lg-2 col-lg-offset-3 text-center">
-            <a class="btn btn-primary {{ next }}" href="/?page={{ page + 1 }}">Next Page</a>
+        <div class="text-center page-number">
+            <nav>
+                <ul class="pagination page-bar">
+                    {% if prev %}
+                        <li><a href="/?page={{ page - 1 }}" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+                    {% endif %}
+                    {% for i in range(1, total_page + 1) %}
+                        {% if page == i %}
+                            <li class="active"><a href="?page={{ i }}">{{ i }}<span class="sr-only">(current)</span></a></li>
+                        {% else %}
+                            <li><a href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if next %}
+                        <li><a href="/?page={{ page + 1 }}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+                    {% endif %}
+                </ul>
+            </nav>
         </div>
     </div>
 
@@ -33,12 +49,13 @@
                     <input type="file" class="upload" name="img" id="img">
                 </div>
                 <button type="submit" class="btn btn-primary">Upload</button>
+                {% if photo %}
+                    <a class="btn btn-warning" style="margin-left: 50px" href="/resume">
+                        Resume
+                    </a>
+                    <img src="{{ photo }}" style="max-height: 200px; max-width: 200px">
+                {% endif %}
             </form>
-        </div>
-        <div class="col-lg-2 col-lg-offset-5">
-            <a class="btn btn-warning" href="/resume">
-                Resume
-            </a>
         </div>
     </div>
 {% endblock %}

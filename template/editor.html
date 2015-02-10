@@ -47,7 +47,7 @@
                     </div>
                     <div class="col-lg-4">
                         <label>Size</label>
-                        <input class="form-control" type="number" min="10" max="48" name="size">
+                        <input class="form-control" type="number" min="10" max="48" name="size" required="required">
                     </div>
                 </div>
                 <div class="row">
@@ -67,6 +67,7 @@
                     </div>
                 </div>
             </form>
+            {% if undo %}
             <div class="row editor-panel">
                 <div class="col-lg-11 col-lg-offset-1 desc">
                     Undo
@@ -79,10 +80,11 @@
                     </div>
                 </div>
             </form>
+            {% endif %}
             <form action="/submit" method="POST" id="submit" role="form">
                 <div class="row submit-btn">
                     <div class="col-lg-10 col-lg-offset-1">
-                        <button type="submit" class="btn btn-success btn-block">Submit</button>
+                        <button type="submit" class="btn btn-success btn-block">Finish</button>
                     </div>
                 </div>
             </form>

@@ -46,7 +46,7 @@ def init_db():
 def set_session():
     session_id = uuid1()
 
-    command = "INSERT INTO sessions (id, expire_time) VALUES ('%s', '%s');" % (session_id, (datetime.now() + relativedelta(months=+3)).strftime('%Y-%m-%d %H:%M:%S'))
+    command = "INSERT INTO sessions (id, expire_time) VALUES ('%s', '%s');" % (session_id, (datetime.now() + relativedelta(months=+1)).strftime('%Y-%m-%d %H:%M:%S'))
     rv = cur.execute(command)
 
     return session_id
@@ -81,9 +81,20 @@ def upload_photo(data, session_id):
 def get_photo(session_id):
     cur.execute("SELECT photo_id FROM sessions WHERE id='%s'" % session_id)
     photo_id = cur.fetchone()[0]
+    if not photo_id:
+        return None
     cur.execute("SELECT data FROM photos WHERE id=%d" % photo_id)
     photo = cur.fetchone()[0]
     return photo
+
+
+def last_photo(session_id):
+    cur.execute("SELECT COUNT(id) FROM photos WHERE session='%s'" % session_id)
+    num = cur.fetchone()[0]
+    if num == 1:
+        return True
+    else:
+        return False
 
 
 def pop_photo(session_id):
@@ -112,7 +123,7 @@ def get_page(page):
     num = cur.fetchone()[0]
     start = (page - 1) * 8
     if (page - 1) * 8 >= num:
-        return []
+        return [], num
     rv = []
     cur.execute("SELECT data FROM photos WHERE session IS NULL ORDER BY create_time DESC LIMIT 8 OFFSET %d" % start)
     photos = cur.fetchall()

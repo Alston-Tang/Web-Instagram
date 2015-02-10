@@ -16,7 +16,8 @@ MIME_TABLE = {'.txt': 'text/plain',
               '.js': 'application/javascript',
               '.jpg': 'image/jpeg',
               '.jpeg': 'image/jpeg',
-              '.png': 'image/png'}
+              '.png': 'image/png',
+              '.gif': 'image/gif'}
 
 IMG_PATH = os.path.join(STATIC_PATH, 'pic')
 
@@ -45,9 +46,10 @@ def get_uploaded_img(env):
     filename, file_extension = os.path.splitext(pic.filename)
     data = pic.value
     img_type = magic.from_buffer(data, mime=True)
-
+    if img_type not in ACCEPT_IMG:
+        return False
     if file_extension not in MIME_TABLE or MIME_TABLE[file_extension] != img_type:
-        return None
+        return False
     img_uri = encode_data_uri(data, img_type)
     return img_uri
 
@@ -70,8 +72,8 @@ def decode_data_uri(data):
     return img, img_type
 
 
-def img_filter(filter_type, data):
-    tmp_file = tempfile.NamedTemporaryFile(delete=False, dir=TEMP_PATH, suffix='.jpg')
+def img_filter(filter_type, data, img_type):
+    tmp_file = tempfile.NamedTemporaryFile(delete=False, dir=TEMP_PATH, suffix=ACCEPT_IMG[img_type])
     tmp_name = tmp_file.name
     tmp_file.write(data)
     tmp_file.close()
@@ -102,26 +104,26 @@ def img_filter(filter_type, data):
     data = tmp_file.read()
     tmp_file.close()
     os.remove(tmp_name)
-    return data, MIME_TABLE['.jpg']
+    return data, img_type
 
 
 def img_annotate(font_type, font_size, position, content, data, img_type):
-    tmp_file = tempfile.NamedTemporaryFile(delete=False, dir=TEMP_PATH, suffix='.jpg')
+    tmp_file = tempfile.NamedTemporaryFile(delete=False, dir=TEMP_PATH, suffix=ACCEPT_IMG[img_type])
     tmp_name = tmp_file.name
     tmp_file.write(data)
     tmp_file.close()
     if position == 'top':
-        subprocess.call(['convert', tmp_name, '-background', 'black', '-fill', '#ffffff', '-pointsize', font_size,
+        subprocess.call(['convert', tmp_name, '-background', 'black', '-fill', '#ffffff', '-pointsize', str(font_size),
                         '-font', font_type, 'label:'+content, '+swap', '-gravity', 'center', '-append', tmp_name])
     elif position == 'bottom':
-        subprocess.call(['convert', tmp_name, '-background', 'black', '-fill', '#ffffff', '-pointsize', font_size,
+        subprocess.call(['convert', tmp_name, '-background', 'black', '-fill', '#ffffff', '-pointsize', str(font_size),
                         '-font', font_type, 'label:'+content, '-gravity', 'center', '-append', tmp_name])
 
     tmp_file = open(tmp_name, 'rb')
     data = tmp_file.read()
     tmp_file.close()
     os.remove(tmp_name)
-    return data, MIME_TABLE['.jpg']
+    return data, img_type
 
 
 def get_flare(width, height):
