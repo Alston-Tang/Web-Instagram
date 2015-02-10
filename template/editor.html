@@ -67,14 +67,26 @@
                     </div>
                 </div>
             </form>
-            <form>
+            <div class="row editor-panel">
+                <div class="col-lg-11 col-lg-offset-1 desc">
+                    Undo
+                </div>
+            </div>
+            <form action="/undo" method="POST" id="submit" role="form">
+                <div class="row">
+                    <div class="col-lg-10 col-lg-offset-1">
+                        <button type="submit" class="btn btn-warning btn-block">Undo</button>
+                    </div>
+                </div>
+            </form>
+            <form action="/submit" method="POST" id="submit" role="form">
                 <div class="row submit-btn">
                     <div class="col-lg-10 col-lg-offset-1">
                         <button type="submit" class="btn btn-success btn-block">Submit</button>
                     </div>
                 </div>
             </form>
-            <form>
+            <form action="/discard" method="POST" id="discard" role="form">
                 <div class="row discard-btn">
                     <div class="col-lg-10 col-lg-offset-1">
                         <button type="submit" class="btn btn-danger btn-block">Discard</button>
@@ -87,8 +99,5 @@
         </div>
     </div>
     <div class="row">
-
-
-
     </div>
 {% endblock %}

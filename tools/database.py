@@ -52,6 +52,21 @@ def set_session():
     return session_id
 
 
+def verify_session(session_id):
+    cur.execute("SELECT * FROM sessions WHERE id='%s'" % session_id)
+    session = cur.fetchone()
+    if not session:
+        session_id = set_session()
+    else:
+        session_id = session[0]
+    return session_id
+
+
+def reset_session(session_id):
+    cur.execute("DELETE FROM photos WHERE session='%s'" % session_id)
+    cur.execute("UPDATE sessions SET photo_id=NULL WHERE id='%s'" % session_id)
+
+
 def upload_photo(data, session_id):
     cur.execute("SELECT photo_id FROM sessions WHERE id='%s'" % session_id)
     last_id = cur.fetchone()[0]
@@ -93,7 +108,7 @@ def commit_photo(session_id):
 
 
 def get_page(page):
-    cur.execute("SELECT COUNT(id) FROM photos")
+    cur.execute("SELECT COUNT(id) FROM photos WHERE session IS NULL")
     num = cur.fetchone()[0]
     start = (page - 1) * 8
     if (page - 1) * 8 >= num:
@@ -103,4 +118,4 @@ def get_page(page):
     photos = cur.fetchall()
     for photo in photos:
         rv.append(photo[0])
-    return rv
+    return rv, num

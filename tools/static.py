@@ -100,6 +100,8 @@ def img_filter(filter_type, data):
 
     tmp_file = open(tmp_name, 'rb')
     data = tmp_file.read()
+    tmp_file.close()
+    os.remove(tmp_name)
     return data, MIME_TABLE['.jpg']
 
 
@@ -117,6 +119,8 @@ def img_annotate(font_type, font_size, position, content, data, img_type):
 
     tmp_file = open(tmp_name, 'rb')
     data = tmp_file.read()
+    tmp_file.close()
+    os.remove(tmp_name)
     return data, MIME_TABLE['.jpg']
 
 
@@ -127,6 +131,7 @@ def get_flare(width, height):
         flare = flare.resize((width, height))
         flare.save(require_file)
     return require_file
+
 
 def get_bwgrad(width, height):
     require_file = os.path.join(IMG_PATH, "bwgrad_%s_%s.png" % (str(width), str(height)))

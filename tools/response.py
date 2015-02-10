@@ -24,7 +24,6 @@ class Response:
             self.header['Set-Cookie'] = '%s=%s; Expires=%s' % \
                                         (cookie[0], cookie[1], expire_time.strftime("%a, %d-%b-%Y %T GMT"))
 
-
     def get_header(self):
         rv = []
         for key in self.header:
