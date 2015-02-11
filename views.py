@@ -2,7 +2,8 @@ __author__ = 'Tang'
 
 from tools import router, Response, set_session, init_db, get_uploaded_img, upload_photo, commit_photo, get_page, \
     get_photo, decode_data_uri, img_filter, encode_data_uri, img_annotate, reset_session, verify_session, pop_photo, \
-    last_photo
+    last_photo, get_data_type, get_photo_id
+from conf import ACCEPT_IMG
 from template import render
 import cgi
 import Cookie
@@ -127,10 +128,17 @@ def submit(env):
         session_id = cookie['token'].value
     if not session_id:
         return index(env)
-    photo = get_photo(session_id)
+    photo, photo_id = get_photo(session_id, req_id=True)
+    if not photo:
+        return None
+    img_type = get_data_type(photo)
+    if img_type not in ACCEPT_IMG:
+        return None
+    ext = ACCEPT_IMG[img_type]
+    link = env['HTTP_ORIGIN']+'/link/'+str(photo_id)+ext
     commit_photo(session_id)
     reset_session(session_id)
-    return Response(render('finish.html', photo=photo))
+    return Response(render('finish.html', photo=photo, photo_link=link))
 
 
 def discard(env):
@@ -175,6 +183,10 @@ def resume(env):
 
 def init_page(env):
     return Response(body=render('init.html'))
+
+
+def permanent_link(env):
+    pass
 
 
 router.route('/', index)

@@ -30,6 +30,14 @@ def application(environ, start_response):
             start_response(res.get_status(), res.get_header())
             return [res.get_body().encode('utf-8')]
 
+    handler = router.permanent_link(url)
+    if handler:
+        img_path = filter(None, url.split('/'))[1]
+        res = handler(img_path, environ)
+        if res:
+            start_response(res.get_status(), res.get_header())
+            return [res.get_body()]
+
     handler = router.static(url)
     if handler:
         res = handler(url, environ)

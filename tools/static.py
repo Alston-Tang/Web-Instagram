@@ -9,6 +9,7 @@ from conf import REPO_PATH, ACCEPT_IMG, TEMP_PATH, STATIC_PATH
 import tempfile
 import subprocess
 from PIL import Image
+from database import get_photo_id
 
 MIME_TABLE = {'.txt': 'text/plain',
               '.html': 'text/html',
@@ -72,6 +73,13 @@ def decode_data_uri(data):
     return img, img_type
 
 
+def get_data_type(data):
+    start = end = 5
+    while data[end] != ';':
+        end += 1
+    return data[start:end]
+
+
 def img_filter(filter_type, data, img_type):
     tmp_file = tempfile.NamedTemporaryFile(delete=False, dir=TEMP_PATH, suffix=ACCEPT_IMG[img_type])
     tmp_name = tmp_file.name
@@ -114,10 +122,10 @@ def img_annotate(font_type, font_size, position, content, data, img_type):
     tmp_file.close()
     if position == 'top':
         subprocess.call(['convert', tmp_name, '-background', 'black', '-fill', '#ffffff', '-pointsize', str(font_size),
-                        '-font', font_type, 'label:'+content, '+swap', '-gravity', 'center', '-append', tmp_name])
+                         '-font', font_type, 'label:'+content, '+swap', '-gravity', 'center', '-append', tmp_name])
     elif position == 'bottom':
         subprocess.call(['convert', tmp_name, '-background', 'black', '-fill', '#ffffff', '-pointsize', str(font_size),
-                        '-font', font_type, 'label:'+content, '-gravity', 'center', '-append', tmp_name])
+                         '-font', font_type, 'label:'+content, '-gravity', 'center', '-append', tmp_name])
 
     tmp_file = open(tmp_name, 'rb')
     data = tmp_file.read()
@@ -142,3 +150,22 @@ def get_bwgrad(width, height):
         grad = grad.resize((width, height))
         grad.save(require_file)
     return require_file
+
+
+def get_permanent(photo_path, env):
+    photo_id, ext = os.path.splitext(photo_path)
+    if ext not in MIME_TABLE:
+        return None
+    try:
+        photo_id = int(photo_id)
+    except:
+        photo_id = None
+    if not photo_id:
+        return None
+    data = get_photo_id(photo_id)
+    if not data:
+        return None
+    image, img_type = decode_data_uri(data)
+    if img_type != MIME_TABLE[ext]:
+        return None
+    return Response(image, ctype=img_type)

@@ -78,15 +78,17 @@ def upload_photo(data, session_id):
     cur.execute("UPDATE sessions SET photo_id=%d WHERE id='%s'" % (photo_id, session_id))
 
 
-def get_photo(session_id):
+def get_photo(session_id, req_id=False):
     cur.execute("SELECT photo_id FROM sessions WHERE id='%s'" % session_id)
     photo_id = cur.fetchone()[0]
     if not photo_id:
         return None
-    cur.execute("SELECT data FROM photos WHERE id=%d" % photo_id)
-    photo = cur.fetchone()[0]
-    return photo
-
+    cur.execute("SELECT data, id FROM photos WHERE id=%d" % photo_id)
+    photo = cur.fetchone()
+    if req_id:
+        return photo[0], photo[1]
+    else:
+        return photo[0]
 
 def last_photo(session_id):
     cur.execute("SELECT COUNT(id) FROM photos WHERE session='%s'" % session_id)
@@ -130,3 +132,10 @@ def get_page(page):
     for photo in photos:
         rv.append(photo[0])
     return rv, num
+
+def get_photo_id(photo_id):
+    cur.execute("SELECT data FROM photos WHERE id=%d" % photo_id)
+    photo = cur.fetchone()
+    if not photo:
+        return None
+    return photo[0]

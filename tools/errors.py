@@ -4,4 +4,4 @@ from response import Response
 import os
 
 def not_found():
-    return Response(os.getcwd(), status=404)
+    return Response(body="Opp! 404!", status=404)

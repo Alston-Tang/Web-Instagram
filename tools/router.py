@@ -1,5 +1,5 @@
 __author__ = 'Tang'
-from static import get_static
+from static import get_static, get_permanent
 
 class RuleTree:
     sub = None
@@ -36,6 +36,8 @@ class Router:
         url_list = filter(None, url.split('/'))
         if url_list and url_list[0] == 'static':
             return None
+        if url_list and url_list[0] == 'link':
+            return None
         for seg in url_list:
             if seg not in cur_pos.sub:
                 return None
@@ -49,6 +51,12 @@ class Router:
             return get_static
 
         return None
+
+    @staticmethod
+    def permanent_link(url):
+        url_list = filter(None, url.split('/'))
+        if url_list and url_list[0] == 'link':
+            return get_permanent
 
     def p_tree(self):
         __traverse__(self.root, '/', 0)
