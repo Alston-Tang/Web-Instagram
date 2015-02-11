@@ -135,7 +135,10 @@ def submit(env):
     if img_type not in ACCEPT_IMG:
         return None
     ext = ACCEPT_IMG[img_type]
-    link = env['HTTP_ORIGIN']+'/link/'+str(photo_id)+ext
+    if 'HTTP_HOST' in env:
+        link = 'http://' + env['HTTP_HOST']+'/link/'+str(photo_id)+ext
+    else:
+        link = '/link' + str(photo_id) + ext
     commit_photo(session_id)
     reset_session(session_id)
     return Response(render('finish.html', photo=photo, photo_link=link))
