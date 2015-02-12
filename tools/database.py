@@ -1,15 +1,17 @@
 __author__ = 'tang'
 
 import MySQLdb
-from conf import DB_HOST, DB_PASSWORD, DB_USERNAME, DB_PORT
+from conf import DB_HOST, DB_PASSWORD, DB_USERNAME, DB_PORT, DB_DATABASE
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from uuid import uuid1
 
 
-con = MySQLdb.connect(user=DB_USERNAME, passwd=DB_PASSWORD, host=DB_HOST, port=int(DB_PORT), db="myinstagram")
+con = MySQLdb.connect(user=DB_USERNAME, passwd=DB_PASSWORD, host=DB_HOST, port=int(DB_PORT), db=DB_DATABASE)
 cur = con.cursor()
 cur.connection.autocommit(True)
+
+
 
 def drop_all():
     cur.execute("DROP TABLE IF EXISTS photos")
@@ -139,3 +141,10 @@ def get_photo_id(photo_id):
     if not photo:
         return None
     return photo[0]
+
+
+try:
+    cur.execute("SELECT * FROM sessions LIMIT 1")
+    cur.execute("SELECT * FROM photos LIMIT 1")
+except:
+    init_db()
