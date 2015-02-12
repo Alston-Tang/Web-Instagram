@@ -84,7 +84,10 @@ def get_photo(session_id, req_id=False):
     cur.execute("SELECT photo_id FROM sessions WHERE id='%s'" % session_id)
     photo_id = cur.fetchone()[0]
     if not photo_id:
-        return None
+        if req_id:
+            return None, None
+        else:
+            return None
     cur.execute("SELECT data, id FROM photos WHERE id=%d" % photo_id)
     photo = cur.fetchone()
     if req_id:
